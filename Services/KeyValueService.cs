@@ -34,7 +34,7 @@ public class KeyValueService : IKeyValueService
             Key = reader.GetString("k"),
             Value = reader.GetString("v")
         };
-        
+
         return result;
     }
 
@@ -47,11 +47,14 @@ public class KeyValueService : IKeyValueService
         await using var transaction = conn.BeginTransaction();
 
 
-        await using var sqlCmd = new SqlCommand( existing ? "UPDATE KvStore SET v = @value, createdAt = GETDATE() WHERE k = @key" : "INSERT INTO KvStore (k, v) VALUES (@key, @value)")
-        {
-            Connection = conn,
-            Transaction = transaction
-        };
+        await using var sqlCmd =
+            new SqlCommand(existing
+                ? "UPDATE KvStore SET v = @value, createdAt = GETDATE() WHERE k = @key"
+                : "INSERT INTO KvStore (k, v) VALUES (@key, @value)")
+            {
+                Connection = conn,
+                Transaction = transaction
+            };
         sqlCmd.Parameters.AddWithValue("@key", key);
         sqlCmd.Parameters.AddWithValue("@value", value);
         await sqlCmd.ExecuteNonQueryAsync();
