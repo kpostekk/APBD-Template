@@ -3,11 +3,13 @@ using WebApp_Template.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add DB service
-builder.Services.AddHostedService<DatabaseService>();
-builder.Services.AddSingleton<DatabaseService>();
+builder.Services.AddSingleton<IDatabaseService, DatabaseService>();
+builder.Services.AddSingleton<IKeyValueService, KeyValueService>();
 
 // Add controllers
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -21,5 +23,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+Console.WriteLine(app.Urls);
 
 app.Run();
